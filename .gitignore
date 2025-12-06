@@ -7,3 +7,23 @@
 ################################################################################
 # End of UiPath Studio common ignores
 ################################################################################
+
+# UiPath auto-generated folders/files to ignore
+.local/
+.settings/
+.objects/
+.tmh/
+.storage/
+.screenshots/
+
+# Log files
+*.log
+*.tmp
+~$*
+
+# Backup / Zip files
+*.zip
+
+# OS-specific files
+Thumbs.db
+.DS_Store
