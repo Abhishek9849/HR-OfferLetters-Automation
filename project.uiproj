@@ -1,0 +1,6 @@
+{
+  "Name": "HR OfferLetter Automation Performer",
+  "ProjectType": "Process",
+  "Description": "An automation to generate offer letters",
+  "MainFile": "Main.xaml"
+}
