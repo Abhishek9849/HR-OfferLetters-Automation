@@ -1,39 +1,154 @@
-### Documentation is included in the Documentation folder ###
 
+# **HR Offer Letters Automation – UiPath (RE-Framework with Queues)**
 
-### REFrameWork Template ###
-**Robotic Enterprise Framework**
+This project automates the **HR Offer Letter generation process** using UiPath’s **Robotic Enterprise Framework (RE-Framework)**.
+It follows the **Dispatcher–Performer architecture**:
 
-* Built on top of *Transactional Business Process* template
-* Uses *State Machine* layout for the phases of automation project
-* Offers high level logging, exception handling and recovery
-* Keeps external settings in *Config.xlsx* file and Orchestrator assets
-* Pulls credentials from Orchestrator assets and *Windows Credential Manager*
-* Gets transaction data from Orchestrator queue and updates back status
-* Takes screenshots in case of system exceptions
+* **Dispatcher** → Reads candidate data and uploads each record to **Orchestrator Queue**.
+* **Performer** → Fetches Queue Items one by one and generates Offer Letters.
 
+---
 
-### How It Works ###
+## 🚀 **Project Overview**
 
-1. **INITIALIZE PROCESS**
- + ./Framework/*InitiAllSettings* - Load configuration data from Config.xlsx file and from assets
- + ./Framework/*GetAppCredential* - Retrieve credentials from Orchestrator assets or local Windows Credential Manager
- + ./Framework/*InitiAllApplications* - Open and login to applications used throughout the process
+The automation helps HR teams generate offer letters faster by eliminating manual document creation.
+It supports:
 
-2. **GET TRANSACTION DATA**
- + ./Framework/*GetTransactionData* - Fetches transactions from an Orchestrator queue defined by Config("OrchestratorQueueName") or any other configured data source
+* Reading candidate data from Excel
+* Creating Queue Items with structured data
+* Generating personalized offer letters (Word/PDF)
+* Saving the output to a configured folder
+* Logging activities using the RE-Framework
+* Retry and exception handling using Queue retry mechanism
 
-3. **PROCESS TRANSACTION**
- + *Process* - Process trasaction and invoke other workflows related to the process being automated 
- + ./Framework/*SetTransactionStatus* - Updates the status of the processed transaction (Orchestrator transactions by default): Success, Business Rule Exception or System Exception
+---
 
-4. **END PROCESS**
- + ./Framework/*CloseAllApplications* - Logs out and closes applications used throughout the process
+## 📂 **Project Structure**
 
+```
+HR-OfferLetters-Automation/
+│
+├── Dispatcher/
+│   ├── Main.xaml
+│   ├── Framework files…
+│   ├── Data/
+│   │   ├── CandidateData.xlsx
+│   │   ├── Config.xlsx
+│
+├── Performer/
+│   ├── Main.xaml
+│   ├── Framework files…
+│   ├── Data/
+│   │   ├── Config.xlsx
+│   │   ├── OfferLetterTemplate.docx
+│
+├── README.md
+└── project.json
+```
 
-### For New Project ###
+---
 
-1. Check the Config.xlsx file and add/customize any required fields and values
-2. Implement InitiAllApplications.xaml and CloseAllApplicatoins.xaml workflows, linking them in the Config.xlsx fields
-3. Implement GetTransactionData.xaml and SetTransactionStatus.xaml according to the transaction type being used (Orchestrator queues by default)
-4. Implement Process.xaml workflow and invoke other workflows related to the process being automated
+## 🧠 **How It Works**
+
+### **1️⃣ Dispatcher – Load Candidates to Queue**
+
+The dispatcher uses RE-Framework steps:
+
+* Reads `CandidateData.xlsx`
+* Loops through each row
+* Creates a **Queue Item** in Orchestrator with candidate info (Name, Role, Salary, DOJ, etc.)
+* Logs success/failure of queue upload
+* Moves to next transaction until all rows are added
+
+---
+
+### **2️⃣ Performer – Generate Offer Letters**
+
+The performer picks **one Queue Item at a time**:
+
+* Extracts candidate data
+* Replaces placeholders inside the offer letter template
+* Generates a personalized DOCX/PDF
+* Saves the file into the output folder (from Config)
+* Updates queue status as **Successful** or **Failed**
+
+---
+
+### **3️⃣ Error Handling & Retry**
+
+This project takes full advantage of RE-Framework:
+
+* **System Exceptions** → Auto retry via Orchestrator queue retry settings
+* **Business Exceptions** → Marked as BusinessException (no retry)
+* **Detailed logs** using UiPath Robot Logs + Orchestrator
+
+---
+
+## ⚙️ **Key Features**
+
+✔ Fully RE-Framework based
+✔ 2-Project Architecture: Dispatcher + Performer
+✔ Uses Orchestrator Queues for scalable processing
+✔ Error-resilient with automatic retry
+✔ Template-driven offer letter creation
+✔ Suitable for enterprise HR departments
+
+---
+
+## 🛠 **Dependencies**
+
+* UiPath Studio 2022+
+* UiPath.System.Activities
+* UiPath.UIAutomation.Activities
+* UiPath.Excel.Activities
+* UiPath.Word.Activities / Document Understanding (if used)
+* Orchestrator Queue access
+
+---
+
+## 📘 **Config File (Config.xlsx)**
+
+Typical configuration keys:
+
+| Key            | Description                          |
+| -------------- | ------------------------------------ |
+| InputFile      | CandidateData.xlsx path (Dispatcher) |
+| QueueName      | Orchestrator Queue name              |
+| TemplatePath   | Offer letter DOCX template           |
+| OutputFolder   | Folder to save generated letters     |
+| MaxRetryNumber | Retry count (Performer)              |
+| LogFolder      | Local log file location              |
+
+---
+
+## ▶️ **How to Run the Automation**
+
+### **1️⃣ Run Dispatcher**
+
+* Update `Config.xlsx`
+* Add input data in `CandidateData.xlsx`
+* Run Dispatcher Main.xaml
+* Verify Queue Items created in Orchestrator
+
+### **2️⃣ Run Performer**
+
+* Ensure Queue Items exist
+* Update performer’s `Config.xlsx`
+* Run Performer Main.xaml
+* Offer letters will be generated automatically
+
+---
+
+## 📌 **Use Cases**
+
+* HR Offer Letter Automation
+* Internship letters
+* Appointment and contract letters
+* Bulk recruitment automation
+
+---
+
+## 🤝 **Contributing**
+
+Feel free to raise issues, fork, or submit improvements.
+
